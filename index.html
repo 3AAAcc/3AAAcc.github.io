@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wenjun Zhu - 个人主页</title>
+    <!-- 引入 FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础变量与重置 */
+        :root {
+            --primary-color: #3b82f6; 
+            --primary-hover: #2563eb;
+            --text-main: #1f2937;
+            --text-light: #4b5563;
+            --glass-bg: rgba(255, 255, 255, 0.65); 
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            padding: 3vh 2vw;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ================= 炫酷背景 & 全局动效 ================= */
+        .bg-image {
+            position: fixed;
+            top: -5%; left: -5%;
+            width: 110%; height: 110%; 
+            background: url('https://images.unsplash.com/photo-1454496522488-7a8e488e8606?ixlib=rb-4.0.3&auto=format&fit=crop&w=2560&q=80') center/cover no-repeat;
+            filter: blur(15px) brightness(1.05); 
+            z-index: -3;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: -2;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .orb-1 {
+            width: 40vw; height: 40vw;
+            background: radial-gradient(circle, rgba(59,130,246,0.8) 0%, rgba(147,197,253,0) 70%);
+            top: -10%; left: -10%;
+            animation-duration: 25s;
+        }
+
+        .orb-2 {
+            width: 35vw; height: 35vw;
+            background: radial-gradient(circle, rgba(167,139,250,0.8) 0%, rgba(221,214,254,0) 70%);
+            bottom: -5%; right: -5%;
+            animation-duration: 22s;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5vw, 5vh) scale(1.1); }
+            100% { transform: translate(-5vw, 10vh) scale(0.9); }
+        }
+
+        /* ================= 页面主布局 ================= */
+        .container {
+            display: flex;
+            width: 95vw; 
+            max-width: 1500px; 
+            min-height: 88vh; 
+            gap: 3vw; 
+            animation: pageFadeIn 1s ease-out forwards;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        /* ================= 左侧侧边栏 ================= */
+        .sidebar {
+            flex: 0 0 340px; 
+            padding: 50px 40px;
+            position: sticky;
+            top: 40px;
+            height: max-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .sidebar:hover {
+            transform: translateY(-8px);
+        }
+
+        .avatar-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            padding: 6px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            margin-bottom: 25px;
+            animation: avatarHover 4s ease-in-out infinite;
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+        }
+
+        @keyframes avatarHover {
+            0% { transform: translateY(0px); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3); }
+            50% { transform: translateY(-12px); box-shadow: 0 25px 45px rgba(139, 92, 246, 0.4); }
+            100% { transform: translateY(0px); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3); }
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 15px;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .info-list {
+            width: 100%;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
+
+        .info-list li i {
+            width: 24px;
+            color: var(--primary-color);
+            margin-right: 12px;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .info-list li a, .info-list li span {
+            text-decoration: none;
+            color: var(--text-light);
+            transition: color 0.3s;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .info-list li:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateX(8px);
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .info-list li:hover i {
+            transform: scale(1.2);
+        }
+
+        .info-list li:hover a, .info-list li:hover span {
+            color: var(--primary-color);
+        }
+
+        /* ================= 右侧主体内容 ================= */
+        .main-wrapper {
+            flex: 1; 
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .navbar {
+            padding: 20px 40px;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-light);
+            position: relative;
+            padding: 8px 0;
+            transition: color 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--primary-color);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateX(-50%);
+            border-radius: 3px;
+        }
+
+        .nav-item:hover::after, .nav-item.active::after {
+            width: 100%;
+        }
+
+        .content-area {
+            flex-grow: 1; 
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none; 
+        }
+
+        .section.active {
+            display: block;
+            animation: slideUpFade 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section h2 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 35px;
+            color: var(--text-main);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 6px;
+            background: rgba(59, 130, 246, 0.2);
+            bottom: 4px;
+            left: 0;
+            border-radius: 3px;
+            z-index: -1;
+            transition: width 0.3s;
+        }
+
+        .section:hover h2::after {
+            width: 100%;
+        }
+
+        .timeline-item {
+            margin-bottom: 40px;
+            position: relative;
+            padding-left: 30px;
+            border-left: 3px solid rgba(59, 130, 246, 0.3);
+            transition: border-color 0.3s;
+        }
+
+        .timeline-item:hover {
+            border-left-color: var(--primary-color);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -11px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .timeline-item:hover::before {
+            transform: scale(1.3);
+            background: var(--primary-color);
+        }
+
+        .timeline-date {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-content h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .timeline-content p {
+            line-height: 1.8;
+            color: var(--text-light);
+            font-size: 15px;
+        }
+
+        .timeline-content p b {
+            color: var(--text-main);
+        }
+
+        .timeline-content p a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .timeline-content p a:hover {
+            text-decoration: underline;
+        }
+
+        /* 博客列表卡片样式补充 */
+        .blog-card {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+        }
+
+        .blog-card:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .blog-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .blog-card .blog-meta {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .blog-card p {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                padding-top: 20px;
+            }
+            .sidebar {
+                flex: none; 
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+            .navbar {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 全局底层背景与动效 -->
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <!-- 左侧常驻侧边栏 -->
+        <aside class="sidebar glass-panel">
+            <div class="avatar-container">
+                <img src="153407332.jpg" alt="Avatar" class="avatar">
+            </div>
+            <h1 class="name">Wenjun Zhu</h1>
+            <p class="title">一直游到海水变蓝</p>
+            
+            <ul class="info-list">
+                <li><i class="fas fa-map-marker-alt"></i> <span>北京市 (Beijing)</span></li>
+                <li><i class="fas fa-university"></i> <span>北京邮电大学 (BUPT)</span></li>
+                <li><i class="fas fa-phone-alt"></i> <span>(+86) 153-0013-2670</span></li>
+                <li><i class="fas fa-envelope"></i> <a href="mailto:wenjunz0927@gmail.com">wenjunz0927@gmail.com</a></li>
+                <li><i class="fab fa-github"></i> <a href="https://github.com/3AAAcc" target="_blank">github.com/3AAAcc</a></li>
+            </ul> <!-- 帮你补上了这一行丢失的标签 -->
+        </aside>
+
+        <!-- 右侧主体区 -->
+        <div class="main-wrapper">
+            <!-- 顶部导航栏，新增 Blog 项 -->
+            <nav class="navbar glass-panel">
+                <div class="nav-item active" onclick="switchTab('about', event)">Home</div>
+                <div class="nav-item" onclick="switchTab('resume', event)">简历</div>
+                <div class="nav-item" onclick="switchTab('publications', event)">Publications</div>
+                <div class="nav-item" onclick="switchTab('blog', event)">Blog (博客)</div>
+            </nav>
+
+            <!-- 动态内容区 -->
+            <main class="content-area glass-panel">
+                
+                <!-- 模块一：Home (个人背景介绍) -->
+                <section id="about" class="section active">
+                    <h2>Education & Background (教育与背景)</h2>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2023 - 2027</div>
+                        <div class="timeline-content">
+                            <h3>北京邮电大学 (BUPT) - 人工智能专业</h3>
+                            <p>目前本科就读于北京邮电大学（Beijing University of Posts and Telecommunications）。我的学习兴趣集中在计算机科学前沿，希望能够将数学和计算技术相结合，在探索生成式模型、智能体规划等方面做出自己的贡献。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">Skills & Foundation</div>
+                        <div class="timeline-content">
+                            <h3>专业技能与理论基础 (IT Skills)</h3>
+                            <p>
+                                <b>编程语言：</b>C++, Python <br>
+                                <b>平台使用：</b>Linux <br>
+                                <b>理论背景：</b>物理 (Physics)、微分几何 (Differential Geometry)、应用数学 (Applied Mathematics) <br>
+                                <b>语言能力：</b>英语 - 熟练
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 模块二：简历 (经历与获奖) -->
+                <section id="resume" class="section">
+                    <h2>Experience & Awards (经历与荣誉)</h2>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Project Experience</div>
+                        <div class="timeline-content">
+                            <h3>实习与项目经历 (Internship/Projects)</h3>
+                            <p>
+                                <b>雏雁计划：</b>参与研发并构建“智能眼镜推荐系统”。<br>
+                                <b>大创项目：</b>主导“基于智能体规划的可控图像生成”课题，探索多模态控制与 AI 智能体调度的结合应用。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Honors & Awards</div>
+                        <div class="timeline-content">
+                            <h3>获奖情况</h3>
+                            <p>
+                                <b>全国大学生数学竞赛：</b>二等奖<br>
+                                <b>华为 ICT 大赛：</b>二等奖<br>
+                                <b>全国大学生人工智能安全竞赛：</b>三等奖
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 模块三：Publications (论文发表) -->
+                <section id="publications" class="section">
+                    <h2>Selected Publications (论文发表)</h2>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2024</div>
+                        <div class="timeline-content">
+                            <h3>PSGEN: Planning the Sketch for Realistic and Unrealistic Scenes Generation</h3>
+                            <p>Xing Cui*, Xinyuan Xu*, <b>Wenjun Zhu</b>, Yaxin Lu, Xu Luo, Zekun Li, Peipei Li<sup>†</sup>.<br> 
+                            <i>Proceedings of[待填写目标会议或期刊, 如CVPR/ICCV/AAAI], 2024</i>.</p>
+                            <p style="font-size: 0.9em; color: var(--text-light); margin-top: 10px;">
+                                <sup>1</sup> Beijing University of Posts and Telecommunications <br>
+                                <sup>2</sup> University of California, Santa Barbara
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 模块四：Blog (博客列表) -->
+                <section id="blog" class="section">
+                    <h2>Tech Blog (技术博客)</h2>
+                    
+                    <!-- 博客列表项 1：跳转到专门的文章页面 -->
+                    <a href="blog-git-basics.html" class="blog-card">
+                        <h3>VS Code 中的 Git 基础操作指南</h3>
+                        <div class="blog-meta"><i class="far fa-calendar-alt"></i> 2024-05-20 · 学习笔记</div>
+                        <p>简单总结在 VS Code 中使用 Git 的核心操作，包括如何将本地代码文件夹链接发布到 GitHub 远程仓库、如何配置 `.gitignore` 文件以忽略特定文件，以及在团队协作时如何安全地拉取（Fetch）与同步（Sync）远端代码，避免冲突。</p>
+                    </a>
+
+                    <!-- 可以在这里继续添加更多的 <a class="blog-card">...</a> -->
+
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript 逻辑 -->
+    <script>
+        function switchTab(tabId, event) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            if(event) {
+                event.target.classList.add('active');
+            }
+
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const activeSection = document.getElementById(tabId);
+            if (activeSection) {
+                void activeSection.offsetWidth; 
+                activeSection.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
