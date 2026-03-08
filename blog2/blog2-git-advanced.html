@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git 进阶：分支协作与 AI 时代的代码审查 - Wenjun Zhu Blog</title>
+    <!-- 引入 FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础变量与重置 (与主页保持统一风格) */
+        :root {
+            --primary-color: #3b82f6; 
+            --text-main: #1f2937;
+            --text-light: #4b5563;
+            --glass-bg: rgba(255, 255, 255, 0.75); 
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            padding: 5vh 2vw;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 炫酷背景 & 全局动效 */
+        .bg-image {
+            position: fixed; top: -5%; left: -5%; width: 110%; height: 110%; 
+            background: url('https://images.unsplash.com/photo-1454496522488-7a8e488e8606?ixlib=rb-4.0.3&auto=format&fit=crop&w=2560&q=80') center/cover no-repeat;
+            filter: blur(15px) brightness(1.05); z-index: -3;
+        }
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.3); z-index: -2;
+        }
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.6;
+            animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .orb-1 {
+            width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(59,130,246,0.8) 0%, rgba(147,197,253,0) 70%);
+            top: -10%; left: -10%; animation-duration: 25s;
+        }
+        .orb-2 {
+            width: 35vw; height: 35vw; background: radial-gradient(circle, rgba(167,139,250,0.8) 0%, rgba(221,214,254,0) 70%);
+            bottom: -5%; right: -5%; animation-duration: 22s; animation-delay: -5s;
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5vw, 5vh) scale(1.1); }
+            100% { transform: translate(-5vw, 10vh) scale(0.9); }
+        }
+
+        /* 单页文章容器 */
+        .article-container {
+            width: 100%;
+            max-width: 900px; 
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 60px;
+            animation: pageFadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 顶部返回按钮 */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 40px;
+            transition: transform 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        /* 博客排版内容样式 */
+        .markdown-body h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #111;
+            line-height: 1.3;
+        }
+
+        .markdown-body .meta-info {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+        }
+
+        .markdown-body h2 {
+            font-size: 22px;
+            margin-top: 45px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            color: var(--primary-color);
+        }
+
+        .markdown-body p {
+            line-height: 1.8;
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+        
+        /* 占位图/真实图片统一格式 */
+        .markdown-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            display: block;
+        }
+
+        /* 用于提示用户填入图片的占位框样式 */
+        .img-placeholder {
+            width: 100%;
+            min-height: 150px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 2px dashed #9ca3af;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin: 20px 0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* 块引用样式 */
+        .markdown-body .callout {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+            color: var(--text-main);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .markdown-body ul, .markdown-body ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .markdown-body strong {
+            color: #111;
+        }
+
+        @media (max-width: 768px) {
+            .article-container { padding: 30px; }
+            .markdown-body h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 全局底层背景与动效 -->
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <main class="article-container">
+        <!-- 返回主页按钮 -->
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> 返回主页 (Back to Home)
+        </a>
+
+        <!-- 博客正文区 -->
+        <article class="markdown-body">
+            <h1>Git 进阶：分支协作与 AI 时代的代码审查</h1>
+            
+            <div class="meta-info">
+                <span><i class="far fa-calendar-alt"></i> 2026-3-8</span>
+                <span><i class="fas fa-tag"></i> 学习笔记 / 协作规范</span>
+                <span><i class="fas fa-user-edit"></i> Wenjun Zhu</span>
+            </div>
+
+            <p>在多人开发或是使用 AI 辅助编程时，代码合并如果缺乏规范，很容易造成线上的混乱甚至灾难。本篇笔记将梳理代码审查（Code Review）中必须掌握的规则设置、分支合并流程，以及在引入 AI 工具后，我们该如何科学有效地管理 Git 提交。</p>
+
+            <h2>1. 代码审查规则与分支设立</h2>
+            <p>为了保护主分支（如 <code>main</code>）不被随意的代码破坏，我们需要在 GitHub 仓库中设立规则：</p>
+            <ul>
+                <li>首先在仓库的设置（Settings）中的 <strong>Rules</strong> 选项卡里新建一个分支规则（New branch ruleset）。</li>
+                <li>给规则命名后，将其状态切换为启用（<strong>Active</strong>）。</li>
+                <li>紧接着选择你要施加规则的特定分支（如 <code>main</code> 分支）。</li>
+            </ul>
+
+            <!-- 第一张图预留位置 -->
+            <img class="img-placeholder" src="1.png" alt="1.png" onerror="this.outerHTML='<div class=\'img-placeholder\'><i class=\'fas fa-image\'></i> &nbsp; [图片位置]：GitHub 规则设置步骤</div>'">
+
+            <p>在规则的具体细节中，我们可以勾选“Require a pull request before merging”，并 <strong>选择需要几个人审查通过（Approve）后代码才能被合并到主分支</strong>。</p>
+
+            <!-- 第二张图预留位置 -->
+            <img class="img-placeholder" src="4.png" alt="2.png" onerror="this.outerHTML='<div class=\'img-placeholder\'><i class=\'fas fa-image\'></i> &nbsp; [图片位置]：设置所需审批人数</div>'">
+
+            <h2>2. 新分支的创建</h2>
+            <p>规范的开发应该始终在独立的分支上进行。在 VS Code 中：</p>
+            <ul>
+                <li>点击底部状态栏的分支图标，选择 <strong>创建新分支</strong>。</li>
+                <li>一般推荐分支以 <code>feat-自己名字</code>（或者具体的功能描述）来命名，便于团队成员辨识。</li>
+                <li>创建完成后，点击云朵图标将分支 <strong>推送（Publish）</strong> 到远程仓库。</li>
+            </ul>
+
+            <!-- 第三张图预留位置 -->
+            <img class="img-placeholder" src="6.png" alt="3.png" onerror="this.outerHTML='<div class=\'img-placeholder\'><i class=\'fas fa-image\'></i> &nbsp; [图片位置]：创建并命名新分支流程</div>'">
+
+
+            <h2>3. 分支的合并 (Pull Request)</h2>
+            <p>当你在个人分支上完成了开发并推送后，需要向主分支发起合并请求：</p>
+            <ul>
+                <li>在 GitHub 仓库页面，系统通常会提示你最近推送了分支，点击 <strong>“Compare & pull request”</strong>。</li>
+                <li>在这里撰写详细的请求说明（Description），然后创建 PR。你的合作者或 Reviewer 就可在此对代码进行审查，并最终同意合并。</li>
+            </ul>
+
+            <!-- 第四张图预留位置 -->
+            <img class="img-placeholder" src="9.png" alt="4.png" onerror="this.outerHTML='<div class=\'img-placeholder\'><i class=\'fas fa-image\'></i> &nbsp; [图片位置]：创建合并请求与撰写说明</div>'">
+
+
+            <h2>4. 基于 AI 代码生成的 Git 管理</h2>
+            <p>在 AI 时代（如使用 GitHub Copilot, Cursor, ChatGPT 等），代码的产出速度极快，且经常出现大规模的结构性重构，或者掺杂人类难以一眼看懂的复杂逻辑。因此我强烈推荐采用以下的 Git 管理方式：</p>
+
+            <ol>
+                <li><strong>记录 Prompt：</strong> 在 Commit 提交信息中，简单记录使用的“提示词”以及修改的最终结果等信息，这极大便于审查者去理解代码的生成初衷。</li>
+                <li><strong>说明验证过程：</strong> 在 PR 中，必须清楚地说明自己已经对 AI 生成的代码进行了怎样的验证与测试。</li>
+            </ol>
+
+            <p>在提交 PR 时，可使用类似下方的模板进行详细描述：</p>
+
+            <div class="callout">
+                <strong>1. 变更摘要 (What & Why)</strong><br>
+                [简单描述这段代码修改的目的和修改范围]<br><br>
+
+                <strong>2. AI 对代码结构的重大改变</strong><br>[如：AI 引入了新的设计模式、拆分了原有的某个大类、或目录结构变动等，请在此高亮说明]<br><br>
+
+                <strong>3. 人工验证与正确性测试 (Human Verification)</strong><br>
+                <em>请描述你如何证明 AI 写的这段代码是“正确”且“健壮”的：</em><br><br>
+                <strong>A. 主流程验证：</strong><br>
+                - 测试动作：[例如：模拟新用户登录，等待15分钟后触发 Token 刷新逻辑]<br>
+                - 验证结果：[例如：验证通过，新 Token 成功下发，旧 Token 失效]<br><br>
+                <strong>B. 边界与异常测试（AI最容易犯错的地方）：</strong><br>
+                - 测试动作：[例如：传入空参数、极大的数值、并发请求]<br>
+                - 验证结果：[例如：触发了预期的 400 错误捕捉，程序未崩溃]
+            </div>
+
+            <!-- 第五张图预留位置 -->
+            <img class="img-placeholder" src="10.png" alt="请在此处填写图片的相对路径：如 images/ai-template.png" onerror="this.outerHTML='<div class=\'img-placeholder\'><i class=\'fas fa-image\'></i> &nbsp; [图片位置]：PR 模板截图示范</div>'">
+
+            <p><strong>💡 对于代码审查人（Reviewer）的转变：</strong><br>
+            审查重点也应该从传统的“逐行代码抠细节”，转向审核 <strong>更改的架构方向</strong> 以及 <strong>测试的完整性</strong>（即思考这段 AI 代码是否遗漏了某些极端场景或潜在问题）。</p>
+
+            <br>
+            <p><i>（完）</i></p>
+
+        </article>
+    </main>
+
+</body>
+</html>
